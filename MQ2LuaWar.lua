@@ -4,6 +4,10 @@ Todo:
 Better defensive cycle.
 Glyph's Power / Dragon
 
+More Taunts Ageless Enmity and so on
+
+Tooltip
+
 PVP button : disable Primal defense etc
 ]]
 
@@ -84,6 +88,16 @@ local function checkIni()
 	end
 end
 
+local function HelpDescription(desc)
+    if ImGui.IsItemHovered() then
+        ImGui.BeginTooltip()
+        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0)
+        ImGui.Text(desc)
+        ImGui.PopTextWrapPos()
+        ImGui.EndTooltip()
+    end
+end
+
 local function buildWindow()
 	local update
 
@@ -95,27 +109,34 @@ local function buildWindow()
 	ImGui.Separator()
 	
     classSettings.Melee_taunt, update = ImGui.Checkbox('Taunt', classSettings.Melee_taunt)
+	HelpDescription('Taunt\'s if needed and build aggro on target')
 	if update then checkIni() end
 	ImGui.SameLine()
 	classSettings.Melee_AOE_taunt, update = ImGui.Checkbox('AOE Taunt', classSettings.Melee_AOE_taunt)
+	HelpDescription('Ensure 100% aggro on extended target list')
 	if update then checkIni() end
 	ImGui.SameLine()
 	classSettings.Melee_snare, update = ImGui.Checkbox('Snare', classSettings.Melee_snare)
+	HelpDescription('Snare target - reducing movement speed')
 	if update then checkIni() end
 	ImGui.SameLine()
 	classSettings.Melee_Sheol, update = ImGui.Checkbox('Sheol\'s', classSettings.Melee_Sheol)
+	HelpDescription('AA 2H melee strike that also buff you (Attack speed and Critical damage)')
 	if update then checkIni() end
 
 	classSettings.Melee_rampage, update = ImGui.Checkbox('Rampage', classSettings.Melee_rampage)
+	HelpDescription('AOE melee attack')
 	if update then checkIni() end
 	ImGui.SameLine()
 	classSettings.Melee_Burn_always, update = ImGui.Checkbox('Burn Always', classSettings.Melee_Burn_always)
+	HelpDescription('Use all burns when they are available')
 	if update then checkIni() end
 	ImGui.NewLine()	
 	
 	ImGui.TextColored(IM_COL32(255, 255, 0, 255), 'Disciplines:')
 	ImGui.Separator()
 	classSettings.Defensive_disc_cycle, update = ImGui.Checkbox('Defensive cycle', classSettings.Defensive_disc_cycle)
+	HelpDescription('Cycle some defensive Disciplines')
 	if update then
 		if classSettings.Offensive_disc_cycle == true then
 			print('Error! You can\'t have both Offensive and Defensive cycle running at the same time')
@@ -128,6 +149,7 @@ local function buildWindow()
 	end
 	ImGui.SameLine()
 	classSettings.Offensive_disc_cycle, update = ImGui.Checkbox('Offensive cycle', classSettings.Offensive_disc_cycle)
+	HelpDescription('Cycle some offensive Disciplines')
 	if update then
 		if classSettings.Defensive_disc_cycle == true then
 			print('Error! You can\'t have both Offensive and Defensive cycle running at the same time')
@@ -140,32 +162,40 @@ local function buildWindow()
 	end
 	ImGui.SameLine()
 	classSettings.Defensive_da, update = ImGui.Checkbox('DA', classSettings.Defensive_da)
+	HelpDescription('Will cast (Flash of Anger) if you get below 30% HP.\nIf (Flash of Anger) is not ready it will cast (Armor of Experience)')
 	if update then checkIni() end
 	ImGui.NewLine()
 	
 	ImGui.TextColored(IM_COL32(255, 255, 0, 255), 'Buffs:')
 	ImGui.Separator()
 	classSettings.Defensive_buffs, update = ImGui.Checkbox('Defensive', classSettings.Defensive_buffs)
+	HelpDescription('Will cast melee, armor and group buffs')
 	if update then checkIni() end
 	ImGui.SameLine()
 	classSettings.Offensive_buffs, update = ImGui.Checkbox('Offensive', classSettings.Offensive_buffs)
+	HelpDescription('Will cast 45% melee DPS buff (Battle Leap)')
 	if update then checkIni() end
 	ImGui.SameLine()
 	classSettings.Defensive_buff_cycle, update = ImGui.Checkbox('Defensive Buff Cycle', classSettings.Defensive_buff_cycle)
+	HelpDescription('Will cycle all defensive buffs but not defensive Disciplines')
 	if update then checkIni() end
 	ImGui.NewLine()
 	
 	ImGui.TextColored(IM_COL32(255, 255, 0, 255), 'Monitor:')
 	ImGui.Separator()
 	classSettings.Misc_monitor_endurance, update = ImGui.Checkbox('Endurance', classSettings.Misc_monitor_endurance)
+	HelpDescription('Will cast Night\'s Calming if endurance gets below 10%')
 	if update then checkIni() end
 	ImGui.SameLine()
 	classSettings.Misc_monitor_food_drink, update = ImGui.Checkbox('Food/Drink', classSettings.Misc_monitor_food_drink)
+	HelpDescription('This will eat (Misty Thicket Picnic) and drink (Kaladim Constitutional) when needed and not your good food and drink.')
 	if update then checkIni() end
 	ImGui.SameLine()
 	classSettings.Misc_powersource, update = ImGui.Checkbox('PowerSource', classSettings.Misc_powersource)
+	HelpDescription('Will Alert (once) you when powersouce is at 0%')
 	if update then checkIni() end
 	classSettings.Misc_aura, update = ImGui.Checkbox('Aura', classSettings.Misc_aura)
+	HelpDescription('Ensure that you have (Champion\'s Aura) at all times')
 	if update then checkIni() end
 			
 	ImGui.End()
@@ -191,8 +221,8 @@ local CheckCombat = function ()
 			if mq.TLO.Me.CombatAbilityReady(mq.TLO.Spell("Bristle").RankName())() then
 				mq.cmd('/doability "'..mq.TLO.Spell("Bristle").RankName()..'"')
 			end
-			if mq.TLO.Me.CombatAbilityReady("Penumbral Precision Rk. II")() and not mq.TLO.Me.Buff("Penumbral Precision").ID() then
-				mq.cmd('/doability "Penumbral Precision Rk. II"')
+			if mq.TLO.Me.CombatAbilityReady(mq.TLO.Spell("Penumbral Precision").RankName())() and not mq.TLO.Me.Buff("Penumbral Precision").ID() then
+				mq.cmd('/doability "'..mq.TLO.Spell("Penumbral Precision").RankName()..'"')
 			end
 			if mq.TLO.Me.AltAbilityReady("Gut Punch")() then
 				mq.cmd('/alt act 3732')
